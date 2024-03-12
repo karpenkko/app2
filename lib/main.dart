@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:app2/models/task_manager.dart';
+import 'package:app2/models/user.dart';
+import 'package:app2/models/wishes.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -30,9 +34,20 @@ class _TaskListPageState extends State<TaskListPage> with WishesList{
   late Function taskCounter;
 
   @override
-  Widget build(BuildContext context) {
-    taskCounter = () => taskCount++;
+  void dispose() {
+    _textEditingController.dispose();
+    _dateEditingController.dispose();
+    super.dispose();
+  }
 
+  @override
+  void initState() {
+    taskCounter = () => taskCount++;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -139,77 +154,13 @@ class _TaskListPageState extends State<TaskListPage> with WishesList{
   }
 }
 
-class Task{
-  String title;
-  bool isCompleted;
-  String date;
-
-  Task(this.title, this.date, {this.isCompleted = false});
-
-  void changeCompleted() {
-    isCompleted = !isCompleted;
-  }
-}
-
-class TaskManager {
-  List<Task> tasks = [];
-
-  void addTask(String title, {String date = '29.02'}) {
-    assert(title.isNotEmpty, 'Title shouldn\'t be empty');
-    Task task = Task(title, date);
-    tasks.add(task);
-  }
-
-  void changeLabel(int index) {
-    tasks[index].changeCompleted();
-  }
-
-  void deleteTask(int index) {
-    tasks.removeAt(index);
-  }
-}
-
-mixin UserCache {
-  static Map<String, User> userCache = {};
-}
-
-class User with UserCache {
-  String username;
-  int age;
-
-  User({required this.username, required this.age});
-
-  factory User.guest(String name) => UserCache.userCache.containsKey(name) ? UserCache.userCache[name]! : User(username: 'Guest', age: 0);
-
-  String getUsername() => username;
-}
 
 
-mixin WishesList{
-  late final Map<String, String> wishes = {
-    'Monday': 'Have a great start of the week!',
-    'Tuesday': 'Stay motivated and focused!',
-    'Wednesday': 'Halfway through, you can do it!',
-    'Thursday': 'Keep pushing, the weekend is near!',
-    'Friday': 'Weekend is almost here, hang in there!',
-    'Saturday': 'Enjoy your weekend to the fullest!',
-    'Sunday': 'Relax and recharge for the week ahead!'
-  };
-}
 
-class Wishes with WishesList {
-  final now = DateTime.now();
 
-  String getWish() {
-    final currentDay = now.weekday;
-    final dayName = getDayName(currentDay);
-    return wishes[dayName] ?? '';
-  }
 
-  String getDayName(int currentDay) {
-    final Set<String> dayNames = {'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'};
-    return (currentDay >= 1 && currentDay <= 7) ? dayNames.elementAt(currentDay - 1) : '';
-  }
-}
+
+
+
 
 
